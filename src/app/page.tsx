@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
-// import ApplicationReviewSection from "@/components/ApplicationReviewSection";
+import ApplicationReviewSection from "@/components/ApplicationReviewSection";
 import { products } from "@/data/products";
 import Link from "next/link";
 
@@ -52,7 +52,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* <ApplicationReviewSection /> */}
+      <ApplicationReviewSection />
     </main>
   );
 }
