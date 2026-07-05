@@ -32,6 +32,13 @@ export default function SellerHomePage() {
                 Create, update, and delete products owned by your store.
                 </p>
             </Link>
+
+            <Link href="/seller/orders" className="border bg-white p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-950">Incoming Orders</h2>
+                <p className="mt-2 text-sm text-slate-600">
+                Manage incoming orders from buyers.
+                </p>
+            </Link>
             </div>
         </section>
         </main>
