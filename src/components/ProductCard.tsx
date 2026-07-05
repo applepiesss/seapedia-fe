@@ -9,14 +9,14 @@ function formatRupiah(value: number) {
     }).format(value);
 }
 
-export default function ProductCard({ product }: { product: ProductResponse }) {
+export default function ProductCard({ product }: { product: any }) {
     return (
         <article className="border border-slate-200 bg-white p-5 shadow-sm">
         <p className="text-xs font-semibold uppercase text-emerald-700">
             {product.storeName}
         </p>
         <h2 className="mt-2 text-lg font-bold text-slate-950">
-            {product.productName}
+            {product.productName || product.name}
         </h2>
         <p className="mt-1 line-clamp-2 text-sm text-slate-500">
             {product.description}
