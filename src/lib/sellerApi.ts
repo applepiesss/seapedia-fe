@@ -49,3 +49,18 @@ export function deleteProduct(token: string, productId: number) {
         headers: authHeaders(token),
     });
 }
+
+import { OrderDetail } from "@/types/order";
+export function processOrder(token: string, orderId: number) {
+    return apiRequest<OrderDetail>(`/api/seller/orders/${orderId}/process`, {
+        method: "POST",
+        headers: authHeaders(token),
+    });
+}
+
+import { SellerReport } from "@/types/report";
+export function getSellerReport(token: string) {
+    return apiRequest<SellerReport>("/api/seller/reports/income", {
+        headers: authHeaders(token),
+    });
+}
