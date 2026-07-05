@@ -41,6 +41,7 @@ type UserProfileResponse = {
         }
 
         async function loadProfile() {
+          if (!auth) return;
         try {
             const data = await apiRequest<UserProfileResponse>("/api/users/me", {
             headers: {
@@ -154,10 +155,17 @@ type UserProfileResponse = {
                 )}
 
                 {profile.activeRole === "BUYER" && (
-                    <p className="mt-4 text-sm text-slate-600">
-                    Buyer wallet, cart, checkout, and order history will be introduced in the
-                    next level.
-                    </p>
+                    <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    <Link
+                        href="/buyer"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Buyer Dashboard</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        Manage your wallet, cart, address, and orders.
+                        </p>
+                    </Link>
+                    </div>
                 )}
 
                 {profile.activeRole === "DRIVER" && (

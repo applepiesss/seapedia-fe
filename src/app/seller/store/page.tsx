@@ -30,6 +30,7 @@ export default function SellerStorePage() {
         setToken(auth.token);
 
         async function loadStore() {
+          if (!auth) return;
         try {
             const data = await getMyStore(auth.token);
             setStore(data);
