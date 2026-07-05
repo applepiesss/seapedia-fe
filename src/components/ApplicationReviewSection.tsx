@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { ApplicationReview } from "@/types/review";
+import DOMPurify from "dompurify";
 
 const STORAGE_KEY = "seapedia-application-reviews";
 
@@ -79,11 +80,23 @@ const initialReviews: ApplicationReview[] = [
         return;
         }
 
+        if (rating < 1 || rating > 5) {
+            alert("Invalid rating");
+            return;
+        }
+
+        const cleanName = DOMPurify.sanitize(trimmedName);
+        const cleanComment = DOMPurify.sanitize(trimmedComment);
+
+        if (!cleanName || !cleanComment) {
+            return;
+        }
+
         const newReview: ApplicationReview = {
         id: createReviewId(),
-        reviewerName: trimmedName,
+        reviewerName: cleanName,
         rating,
-        comment: trimmedComment,
+        comment: cleanComment,
         createdAt: new Date().toISOString(),
         };
 
