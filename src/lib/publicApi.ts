@@ -16,3 +16,12 @@ export async function submitReview(data: ReviewPayload) {
     body: JSON.stringify(data),
   });
 }
+
+export async function getFeaturedProducts(): Promise<any[]> {
+  try {
+    const products = await apiRequest<any[]>("/api/public/products");
+    return products.slice(0, 3);
+  } catch {
+    return [];
+  }
+}

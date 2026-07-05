@@ -56,27 +56,30 @@ function formatRupiah(value: number) {
     };
 
     return (
-        <main className="min-h-screen bg-slate-50">
+        <main className="min-h-screen bg-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-10">
+            <div className="absolute top-[-10%] left-[-10%] w-1/2 h-1/2 bg-[#4A9FE8] rounded-full blur-[100px]" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-1/2 h-1/2 bg-[#7FDBDA] rounded-full blur-[120px]" />
+        </div>
+
         <Header />
 
-        <section className="mx-auto max-w-5xl px-6 py-12">
-            <Link href="/products" className="text-sm font-semibold text-emerald-700">
+        <section className="mx-auto max-w-5xl px-6 py-12 relative z-10">
+            <Link href="/products" className="inline-flex items-center gap-1 text-sm font-semibold text-[#4A9FE8] transition-colors hover:text-[#25a9a8]">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
             Back to products
             </Link>
 
-            {message && <p className="mt-6 text-slate-600">{message}</p>}
+            {message && <p className="mt-6 text-sm text-slate-500">{message}</p>}
 
             {product && (
-            <div className="mt-6 border border-slate-200 bg-white p-8">
-                <p className="text-sm font-semibold uppercase text-emerald-700">
+            <div className="mt-6 rounded-xl border border-slate-200 bg-white/80 backdrop-blur-md p-8 shadow-[0_8px_30px_rgba(74,159,232,0.08)]">
+                <p className="text-sm font-semibold uppercase tracking-wide bg-gradient-to-r from-[#4A9FE8] to-[#25a9a8] bg-clip-text text-transparent">
                 {product.storeName}
                 </p>
                 <h1 className="mt-3 text-4xl font-bold text-slate-950">
                 {product.productName}
                 </h1>
-                <p className="mt-2 text-slate-500">
-                Sold by {product.sellerUsername}
-                </p>
                 <p className="mt-6 text-3xl font-bold text-slate-950">
                 {formatRupiah(product.price)}
                 </p>
@@ -89,21 +92,18 @@ function formatRupiah(value: number) {
                     <button
                         onClick={handleAddToCart}
                         disabled={addingToCart}
-                        className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:bg-blue-300"
+                        className="mt-6 rounded-xl px-6 py-3 bg-gradient-to-r from-[#4A9FE8] to-[#7FDBDA] text-white font-semibold transition-all hover:shadow-[0_4px_15px_rgba(74,159,232,0.4)] hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
                     >
                         {addingToCart ? "Adding..." : "Add to Cart"}
                     </button>
                 )}
 
                 <div className="mt-8 border-t border-slate-200 pt-5">
-                <h2 className="text-sm font-semibold uppercase text-slate-500">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
                     Store Information
                 </h2>
                 <p className="mt-2 font-semibold text-slate-950">
                     {product.storeName}
-                </p>
-                <p className="mt-1 text-sm text-slate-600">
-                    This public block identifies which Seller store owns the product.
                 </p>
                 </div>
             </div>
