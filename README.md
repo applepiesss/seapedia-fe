@@ -1,108 +1,161 @@
-# SEAPEDIA E-Commerce Platform
+# SEAPEDIA — Frontend (Next.js)
 
-SEAPEDIA is a comprehensive multi-role e-commerce system supporting public users, buyers, sellers, drivers, and administrators. This project implements a fully functional marketplace with role-based dashboards, single-store cart behavior, complex discount structures, order SLA tracking, and robust security.
+Next.js frontend for the SEAPEDIA multi-role e-commerce platform.  
+Supports public browsing, role-based dashboards (Buyer, Seller, Driver, Admin), glassmorphism UI, and full marketplace flow.
 
-## 🚀 Running the Project & Demo Setup
+---
 
-SEAPEDIA includes an automated demo seeder to make evaluation incredibly easy. 
+## 🛠️ How to Run Locally
 
-### Starting the Backend with Demo Data
-To instantly generate all required roles (Admin, Seller, Buyer, Driver) along with a pre-configured store and wallets, run the Spring Boot application with the following flag:
+### Prerequisites
+
+| Tool | Version |
+|------|---------|
+| **Node.js** | 18 or later |
+| **npm** | 9 or later |
+
+---
+
+### 1. Configure Environment Variables
 
 ```bash
-cd seapedia-be
-./gradlew bootRun --args="--seed.demo=true"
+cp .env.example .env.local
 ```
 
-### Demo Accounts Generated
-| Role | Username | Password | Notes |
-|------|----------|----------|-------|
-| Admin | `admin` | `adminseapedia` | Full monitoring access |
-| Seller | `seller1` | `sellerseapedia` | "Toko Seller Seapedia" auto-created |
-| Buyer | `buyer1` | `buyerseapedia` | Rp 1.000.000 wallet balance auto-created |
-| Driver | `driver1` | `driverseapedia` | Ready to take delivery jobs |
+Open `.env.local` and set the backend URL:
 
-*Note: You can log into any of these accounts immediately on the frontend.*
+```env
+# Point to wherever the Spring Boot backend is running
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+```
+
+> If you're running the backend locally with default settings, no changes needed — it already points to `localhost:8080`.
+
+---
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+### 3. Run the Development Server
+
+```bash
+npm run dev
+```
+
+The app will be available at **http://localhost:3000**.
+
+---
+
+### 4. Make Sure the Backend is Running
+
+The frontend requires the Spring Boot backend to be up.  
+See [seapedia-be/README.md](../seapedia-be/README.md) for backend setup instructions.
+
+> **Quick start:** Run the backend with demo accounts pre-seeded:
+> ```bash
+> cd ../seapedia-be
+> ./gradlew bootRun --args="--seed.demo=true"
+> ```
+
+---
+
+### 5. Open in Browser
+
+Go to **http://localhost:3000** and either:
+- Register a new account, or
+- Use one of the seeded demo accounts:
+
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `adminseapedia` |
+| Seller | `seller1` | `sellerseapedia` |
+| Buyer | `buyer1` | `buyerseapedia` |
+| Driver | `driver1` | `driverseapedia` |
+
+---
+
+## 📁 Project Structure
+
+```
+seapedia-fe/
+├── src/
+│   ├── app/                  # Next.js App Router pages
+│   │   ├── page.tsx          # Public marketplace homepage
+│   │   ├── dashboard/        # Unified role dashboard
+│   │   ├── buyer/            # Buyer dashboard (wallet, cart, orders)
+│   │   ├── seller/           # Seller dashboard (products, orders, reports)
+│   │   ├── driver/           # Driver dashboard (jobs, earnings)
+│   │   ├── admin/            # Admin dashboard (monitoring, discounts)
+│   │   ├── products/         # Public product listing & detail
+│   │   ├── login/            # Login page
+│   │   ├── register/         # Registration page
+│   │   └── choose-role/      # Role switcher
+│   ├── components/           # Shared components (Header, ProductCard, Toast, etc.)
+│   ├── lib/                  # API clients and auth utilities
+│   └── types/                # TypeScript type definitions
+├── .env.example              # Environment variable template
+└── README.md
+```
+
+---
+
+## 🔑 Key Features
+
+- **Public Marketplace** — Browse products without login
+- **Role-based Dashboards** — Separate UIs for Buyer, Seller, Driver, Admin
+- **Multi-role Accounts** — One user can hold multiple roles and switch between them
+- **Glass UI** — White + blue-hint glassmorphism design system throughout
+- **XSS Protection** — DOMPurify sanitization on public user inputs with toast warnings
+- **Toast Notifications** — Global toast system for success, error, and security alerts
+
+---
+
+## 🧪 End-to-End Test Flow
+
+1. **Seed** — start backend with `--seed.demo=true`
+2. **Admin** — create a Voucher and Promo in the Discounts dashboard
+3. **Seller** — add a product with stock in the Products dashboard
+4. **Buyer** — add to cart, apply discounts, add address, checkout
+5. **Seller** — go to Orders → process the order
+6. **Driver** — find the job, take it, complete delivery
+7. **Admin** — use "Simulate Next Day" to trigger the overdue auto-refund demo
 
 ---
 
 ## 📖 API Documentation (Swagger)
 
-The backend exposes a fully interactive OpenAPI specification via Swagger UI.
-Once the backend is running, navigate to:
+The backend exposes a fully interactive OpenAPI spec via Swagger UI.  
+Once the backend is running, navigate to:  
 **[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)**
-
----
-
-## 🏗️ Core Business Rules Documentation
-
-### 1. Single-Store Checkout Rule
-- A Buyer's cart may only contain products from a **single Seller store** at any given time.
-- If a user attempts to add a product from a different store, the backend explicitly rejects the request.
-- The UI prompts the user to either checkout the current store's items or clear their cart before proceeding with the new store.
-
-### 2. Pricing, Discount, and PPN 12% Rules
-- **Discounts**: Buyers can apply both a **Voucher** (flat amount reduction) and a **Promo** (percentage reduction) simultaneously. The Voucher is subtracted *before* the Promo percentage is applied.
-- **PPN**: A flat **12% tax** is added to the total *after* all discounts are applied.
-- **Delivery Fee**: The delivery fee is added *after* the PPN calculation.
-- **Formula**:
-  ```text
-  Subtotal = SUM(Price * Quantity)
-  Discounted Subtotal = (Subtotal - Voucher Amount) * (1 - Promo Percent)
-  PPN = Discounted Subtotal * 0.12
-  Final Total = Discounted Subtotal + PPN + Delivery Fee
-  ```
-
-### 3. Driver Earnings Rule
-- Drivers earn exactly **100% of the Delivery Fee** paid by the Buyer during checkout.
-- When an order reaches `PESANAN_SELESAI`, the delivery job is marked as `COMPLETED`, and the delivery fee amount is permanently added to the Driver's total earnings.
-
-### 4. Overdue SLA Handling & Time Simulation
-- Each delivery method has a maximum Service Level Agreement (SLA) time:
-  - Instant: 24 Hours
-  - Next Day: 48 Hours
-  - Regular: 120 Hours
-- If a Seller fails to process an order (`SEDANG_DIKEMAS`) or a Driver takes too long (`SEDANG_DIKIRIM`), the order becomes overdue.
-- Overdue orders are automatically marked as `DIKEMBALIKAN` and the buyer receives a 100% refund to their wallet.
-- **How to simulate time**: The Admin dashboard includes a **"Simulate Next Day"** action. This triggers a backend endpoint that retroactively shifts the `createdAt` timestamp of all active orders back by 24 hours and triggers the overdue verification job.
 
 ---
 
 ## 🔒 Security Hardening
 
-SEAPEDIA employs strict security measures across both the frontend and backend to mitigate OWASP Top 10 vulnerabilities:
+SEAPEDIA employs strict security measures to mitigate OWASP Top 10 vulnerabilities:
 
 ### 1. SQL Injection Prevention
-- The backend leverages **Spring Data JPA** and Hibernate exclusively for database interactions.
-- All dynamic query parameters are strictly bound via Prepared Statements, neutralizing SQL Injection (SQLi) attack vectors.
-- **Attack Mitigated:** Submitting a username like `' OR '1'='1` or a review comment like `'); DROP TABLE application_reviews; --` is treated as literal text, preventing malicious database manipulation.
+- The backend uses **Spring Data JPA** and Hibernate exclusively — all parameters are strictly bound via Prepared Statements.
+- **Attack mitigated:** Submitting a username like `' OR '1'='1` or a review like `'); DROP TABLE application_reviews; --` is treated as literal text.
 
 ### 2. XSS (Cross-Site Scripting) Prevention
-- The React frontend inherently escapes HTML entities in variables (e.g. `{review.comment}`), preventing script execution.
-- As an added defense-in-depth layer, **DOMPurify** is utilized to rigorously sanitize public user inputs (such as Application Reviews) before they are sent to the server.
-- The UI features a robust **Toast notification system** that actively warns users if their input contains malicious payloads.
-- **Attack Mitigated:** Submitting a review comment containing `<script>alert('XSS')</script>` or `<img src="x" onerror="alert(1)">` will be immediately intercepted, sanitized, and blocked by the frontend, triggering a security warning toast.
+- React inherently escapes HTML in variables (e.g. `{review.comment}`).
+- **DOMPurify** sanitizes all public user inputs (e.g. Application Reviews) before sending to the server.
+- The global Toast system warns the user if a malicious payload is detected and blocked.
+- **Attack mitigated:** A review containing `<script>alert('XSS')</script>` or `<img src="x" onerror="alert(1)">` is intercepted, sanitized, and blocked with a security warning toast.
 
 ### 3. Input Validation & Data Integrity
-- **Backend**: Standardized `@Valid` constraints (`@NotBlank`, `@Min`, `@Max`, `@Email`) are enforced on all DTOs. Advanced regex (`@Pattern`) is utilized to validate phone numbers.
-- **Frontend**: Client-side validation prevents invalid states (e.g. negative quantities, ratings > 5) from ever reaching the network layer.
-- **Attack Mitigated:** Submitting a rating of `999` or attempting to bypass cart limitations via API tools (e.g., Postman) will be cleanly rejected with a `400 Bad Request` by the Spring Boot validation layer.
+- **Backend:** `@Valid` constraints (`@NotBlank`, `@Min`, `@Max`, `@Email`, `@Pattern`) are enforced on all DTOs.
+- **Frontend:** Client-side validation prevents invalid states (negative quantities, ratings > 5) from reaching the network.
+- **Attack mitigated:** Submitting a rating of `999` or bypassing cart limits via Postman will be rejected with `400 Bad Request`.
 
 ### 4. Role-Based Access Control (RBAC) & Session Hardening
-- **Stateless Sessions**: Authentication is handled via stateless JWTs. Upon logout, the client actively destroys the token, fully invalidating the session from the browser's perspective.
-- **Strict Role Verification**: Every protected API route enforces authorization via `@PreAuthorize` annotations tailored to the user's *currently active role*, ensuring users cannot escalate privileges even if they own multiple roles.
-- **Resource Ownership**: Endpoints strictly verify resource ownership.
-- **Attack Mitigated:** A user with a `BUYER` role attempting to call `POST /api/seller/products` using their valid JWT will be blocked with a `403 Forbidden`. Similarly, a `DRIVER` attempting to complete a job assigned to a different driver ID will be rejected.
-
----
-
-## 🧪 End-to-End Testing Guide
-
-Follow this quick guide to test the entire lifecycle:
-1. **Seed Data**: Start backend with `--seed.demo=true`.
-2. **Admin Action**: Login as `admin`. Create a Voucher and Promo in the discount dashboard.
-3. **Seller Action**: Login as `seller1`. Go to Seller dashboard and add a new Product with stock.
-4. **Buyer Action**: Login as `buyer1`. Add the product to cart, apply the created Voucher & Promo, add an address, and Checkout.
-5. **Seller Action**: Login as `seller1`. Go to Orders, click **"Siap Dikirim"** to process the order.
-6. **Driver Action**: Login as `driver1`. View available jobs, Take the job, and eventually Complete it.
-7. **Simulation**: As `admin`, try "Simulate Next Day" on an unprocessed order to see the Auto-Refund logic trigger.
+- **Stateless JWTs:** Upon logout, the client destroys the token, fully invalidating the session.
+- **Strict role verification:** Every protected route uses `@PreAuthorize` scoped to the user's *currently active role*.
+- **Resource ownership:** Endpoints verify ownership — users can only access their own data.
+- **Attack mitigated:** A `BUYER` calling `POST /api/seller/products` with a valid JWT gets `403 Forbidden`. A `DRIVER` trying to complete another driver's job is rejected.
