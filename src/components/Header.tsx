@@ -32,18 +32,20 @@ export default function Header() {
 
             {auth ? (
                 <>
-                <Link href="/dashboard" className="transition-colors hover:text-[#4A9FE8]">Dashboard</Link>
-
                 {auth.activeRole === "SELLER" && (
-                    <Link href="/seller" className="transition-colors hover:text-[#4A9FE8]">Seller</Link>
+                    <Link href="/dashboard" className="transition-colors hover:text-[#4A9FE8]">Dashboard</Link>
                 )}
 
                 {auth.activeRole === "BUYER" && (
-                    <Link href="/buyer" className="transition-colors hover:text-[#4A9FE8]">Buyer</Link>
+                    <Link href="/dashboard" className="transition-colors hover:text-[#4A9FE8]">Dashboard</Link>
                 )}
 
                 {auth.activeRole === "DRIVER" && (
-                    <Link href="/driver" className="transition-colors hover:text-[#4A9FE8]">Driver</Link>
+                    <Link href="/dashboard" className="transition-colors hover:text-[#4A9FE8]">Dashboard</Link>
+                )}
+
+                {auth.activeRole === "ADMIN" && (
+                    <Link href="/dashboard" className="transition-colors hover:text-[#4A9FE8]">Dashboard</Link>
                 )}
 
                 {auth.roles.length > 1 && (

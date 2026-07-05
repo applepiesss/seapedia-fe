@@ -32,7 +32,7 @@ export default function AvailableJobsPage() {
       <Header />
       <div className="max-w-5xl mx-auto p-8">
         <div className="mb-8">
-          <Link href="/driver" className="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Dashboard</Link>
+          <Link href="/dashboard" className="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Dashboard</Link>
           <h1 className="text-3xl font-bold text-gray-800">Available Delivery Jobs</h1>
           <p className="text-gray-500 mt-2">Find and take delivery jobs from sellers.</p>
         </div>
