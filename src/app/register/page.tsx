@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { apiRequest } from "@/lib/api";
 import { saveAuth } from "@/lib/auth";
 import type { AuthResponse, Role } from "@/types/auth";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 const roleOptions: Role[] = ["BUYER", "SELLER", "DRIVER"];
@@ -11,6 +12,7 @@ const roleOptions: Role[] = ["BUYER", "SELLER", "DRIVER"];
 export default function RegisterPage() {
     const [roles, setRoles] = useState<Role[]>(["BUYER"]);
     const [message, setMessage] = useState("");
+    const router = useRouter();
 
     function toggleRole(role: Role) {
         setRoles((current) =>
@@ -23,6 +25,11 @@ export default function RegisterPage() {
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setMessage("");
+
+        if (roles.length === 0) {
+        setMessage("Please choose at least one role.");
+        return;
+        }
 
         const formData = new FormData(event.currentTarget);
 
@@ -39,7 +46,13 @@ export default function RegisterPage() {
         });
 
         saveAuth(auth);
-        setMessage("Registration success. You can now continue with SEAPEDIA.");
+
+        if (auth.mustChooseRole) {
+            router.replace("/choose-role");
+            return;
+        }
+
+        router.replace("/dashboard");
         } catch (error) {
         setMessage(error instanceof Error ? error.message : "Register failed");
         }
@@ -50,11 +63,29 @@ export default function RegisterPage() {
         <Header />
         <section className="mx-auto max-w-md px-6 py-12">
             <h1 className="text-3xl font-bold text-slate-950">Register</h1>
+
             <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
-            <input name="username" className="h-11 border px-3" placeholder="Username" />
-            <input name="email" className="h-11 border px-3" placeholder="Email" />
-            <input name="phoneNumber" className="h-11 border px-3" placeholder="Phone number" />
-            <input name="password" className="h-11 border px-3" placeholder="Password" type="password" />
+            <input
+                name="username"
+                className="h-11 border px-3"
+                placeholder="Username"
+            />
+            <input
+                name="email"
+                className="h-11 border px-3"
+                placeholder="Email"
+            />
+            <input
+                name="phoneNumber"
+                className="h-11 border px-3"
+                placeholder="Phone number"
+            />
+            <input
+                name="password"
+                className="h-11 border px-3"
+                placeholder="Password"
+                type="password"
+            />
 
             <div className="grid gap-2">
                 <p className="text-sm font-medium text-slate-700">Choose roles</p>
@@ -74,6 +105,7 @@ export default function RegisterPage() {
                 Register
             </button>
             </form>
+
             {message && <p className="mt-4 text-sm text-slate-700">{message}</p>}
         </section>
         </main>

@@ -5,31 +5,34 @@ import { apiRequest } from "@/lib/api";
 import { saveAuth } from "@/lib/auth";
 import type { AuthResponse } from "@/types/auth";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const router = useRouter();
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setMessage("");
-
+        
         try {
-        const auth = await apiRequest<AuthResponse>("/api/auth/login", {
-            method: "POST",
-            body: JSON.stringify({ username, password }),
-        });
-
-        saveAuth(auth);
-
-        setMessage(
-            auth.mustChooseRole
-            ? "Login success. Please choose an active role in the next flow."
-            : `Login success. Active role: ${auth.activeRole}`,
-        );
-        } catch (error) {
-        setMessage(error instanceof Error ? error.message : "Login failed");
+            const auth = await apiRequest<AuthResponse>("/api/auth/login", {
+                method: "POST",
+                body: JSON.stringify({ username, password }),
+            });
+        
+            saveAuth(auth);
+        
+            if (auth.mustChooseRole) {
+                router.replace("/choose-role");
+                return;
+            }
+        
+            router.replace("/dashboard");
+            } catch (error) {
+            setMessage(error instanceof Error ? error.message : "Login failed");
         }
     }
 
