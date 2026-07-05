@@ -38,6 +38,10 @@ export default function Header() {
                     <Link href="/seller">Seller</Link>
                 )}
 
+                {auth.activeRole === "BUYER" && (
+                    <Link href="/buyer">Buyer</Link>
+                )}
+
                 {auth.roles.length > 1 && (
                     <Link href="/choose-role">Switch Role</Link>
                 )}

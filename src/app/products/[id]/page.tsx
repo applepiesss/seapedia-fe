@@ -1,11 +1,13 @@
 "use client";
 
+import { getAuth } from "@/lib/auth";
 import Header from "@/components/Header";
 import { getPublicProduct } from "@/lib/catalogApi";
 import type { ProductResponse } from "@/types/seller";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { addToCart } from "@/lib/buyerApi";
 
 function formatRupiah(value: number) {
     return new Intl.NumberFormat("id-ID", {
@@ -17,8 +19,11 @@ function formatRupiah(value: number) {
 
     export default function ProductDetailPage() {
     const params = useParams<{ id: string }>();
+    const router = useRouter();
     const [product, setProduct] = useState<ProductResponse | null>(null);
     const [message, setMessage] = useState("Loading product...");
+    const [activeRole, setActiveRole] = useState<string | null>(null);
+    const [addingToCart, setAddingToCart] = useState(false);
 
     useEffect(() => {
         async function loadProduct() {
@@ -30,9 +35,25 @@ function formatRupiah(value: number) {
             setMessage(error instanceof Error ? error.message : "Failed to load product");
         }
         }
-
         loadProduct();
+        setActiveRole(getAuth()?.activeRole || null);
     }, [params.id]);
+
+    const handleAddToCart = async () => {
+        setAddingToCart(true);
+        try {
+            const token = getAuth()?.token;
+            if (!token) return;
+            await addToCart(token, Number(params.id), 1);
+            alert("Product added to cart!");
+            router.push("/buyer/cart");
+        } catch (e: any) {
+            console.error(e);
+            alert(`Failed to add: ${e.message || "Unknown error"}`);
+        } finally {
+            setAddingToCart(false);
+        }
+    };
 
     return (
         <main className="min-h-screen bg-slate-50">
@@ -63,6 +84,16 @@ function formatRupiah(value: number) {
                 <p className="mt-8 max-w-2xl whitespace-pre-wrap break-words leading-7 text-slate-700">
                 {product.description}
                 </p>
+
+                {activeRole === "BUYER" && (
+                    <button
+                        onClick={handleAddToCart}
+                        disabled={addingToCart}
+                        className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:bg-blue-300"
+                    >
+                        {addingToCart ? "Adding..." : "Add to Cart"}
+                    </button>
+                )}
 
                 <div className="mt-8 border-t border-slate-200 pt-5">
                 <h2 className="text-sm font-semibold uppercase text-slate-500">
