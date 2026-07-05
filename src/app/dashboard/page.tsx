@@ -223,9 +223,27 @@ type UserProfileResponse = {
                 )}
 
                 {profile.activeRole === "ADMIN" && (
-                    <p className="mt-4 text-sm text-slate-600">
-                    Admin monitoring tools will be introduced in later levels.
-                    </p>
+                    <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    <Link
+                        href="/admin/monitoring"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Monitoring Dashboard</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        View marketplace statistics and manage overdue orders.
+                        </p>
+                    </Link>
+
+                    <Link
+                        href="/admin/discounts"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Manage Discounts</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        Create and monitor Vouchers and Promo codes.
+                        </p>
+                    </Link>
+                    </div>
                 )}
             </section>
 
