@@ -88,7 +88,7 @@ export default function ManageDiscountsPage() {
                   <div key={p.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-mono bg-purple-100 text-purple-800 px-3 py-1 rounded font-bold">{p.code}</span>
-                      <span className="text-lg font-bold text-green-600">{p.discountPercent}% OFF</span>
+                      <span className="text-lg font-bold text-green-600">{p.discountPercentage}% OFF</span>
                     </div>
                     <div className="text-sm text-gray-600 flex justify-end">
                       <span>Expires: {new Date(p.expiryDate).toLocaleDateString("id-ID")}</span>
