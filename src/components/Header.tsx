@@ -42,6 +42,10 @@ export default function Header() {
                     <Link href="/buyer">Buyer</Link>
                 )}
 
+                {auth.activeRole === "DRIVER" && (
+                    <Link href="/driver">Driver</Link>
+                )}
+
                 {auth.roles.length > 1 && (
                     <Link href="/choose-role">Switch Role</Link>
                 )}

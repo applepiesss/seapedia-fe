@@ -199,9 +199,27 @@ type UserProfileResponse = {
                 )}
 
                 {profile.activeRole === "DRIVER" && (
-                    <p className="mt-4 text-sm text-slate-600">
-                    Driver delivery jobs and earnings will be introduced in later levels.
-                    </p>
+                    <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    <Link
+                        href="/driver"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Driver Dashboard</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        View your active job, job history, and total earnings.
+                        </p>
+                    </Link>
+
+                    <Link
+                        href="/driver/jobs"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Find Jobs</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        Search and accept available delivery jobs.
+                        </p>
+                    </Link>
+                    </div>
                 )}
 
                 {profile.activeRole === "ADMIN" && (
