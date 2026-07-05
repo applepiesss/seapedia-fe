@@ -2,46 +2,77 @@
 
 import { getAuth } from "@/lib/auth";
 import { useEffect, useState, use } from "react";
-import { getBuyerOrder } from "@/lib/orderApi";
+import { getSellerOrder } from "@/lib/orderApi";
+import { processOrder } from "@/lib/sellerApi";
 import { OrderDetail } from "@/types/order";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function BuyerOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function SellerOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const router = useRouter();
+
+  const fetchOrder = async () => {
+    try {
+      const token = getAuth()?.token;
+      if (!token) return;
+      const data = await getSellerOrder(token, unwrappedParams.id);
+      setOrder(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const token = getAuth()?.token;
-        if (!token) return;
-        const data = await getBuyerOrder(token, unwrappedParams.id);
-        setOrder(data);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrder();
   }, [unwrappedParams.id]);
+
+  const handleProcessOrder = async () => {
+    setProcessing(true);
+    try {
+      const token = getAuth()?.token;
+      if (!token) return;
+      await processOrder(token, Number(unwrappedParams.id));
+      alert("Order processed successfully!");
+      fetchOrder();
+    } catch (e: any) {
+      alert(`Failed to process order: ${e.message || "Unknown error"}`);
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   if (loading) return <div className="p-8">Loading order details...</div>;
   if (!order) return <div className="p-8">Order not found.</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <div className="mb-6">
-        <Link href="/buyer/orders" className="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Orders</Link>
-        <h1 className="text-3xl font-bold text-gray-800">Order #{order.id}</h1>
-        <p className="text-gray-500 mt-1">Placed on {new Date(order.createdAt).toLocaleString("id-ID")}</p>
+      <div className="mb-6 flex justify-between items-end">
+        <div>
+          <Link href="/seller/orders" className="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Orders</Link>
+          <h1 className="text-3xl font-bold text-gray-800">Order #{order.id}</h1>
+          <p className="text-gray-500 mt-1">Placed on {new Date(order.createdAt).toLocaleString("id-ID")}</p>
+        </div>
+        {order.status === "SEDANG_DIKEMAS" && (
+          <button
+            onClick={handleProcessOrder}
+            disabled={processing}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:bg-blue-300"
+          >
+            {processing ? "Processing..." : "Process Order"}
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-6">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">Items from {order.storeName}</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Items Ordered</h2>
             <div className="space-y-4">
               {order.items.map((item) => (
                 <div key={item.productId} className="flex justify-between items-center py-2 border-b last:border-0">

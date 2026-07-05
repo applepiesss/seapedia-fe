@@ -21,6 +21,9 @@ export interface Order {
 export interface OrderDetail extends Order {
   deliveryMethod: string;
   subtotal: number;
+  discount?: number;
+  discountType?: string;
+  discountCode?: string;
   deliveryFee: number;
   ppn: number;
   items: OrderItem[];
@@ -35,6 +38,8 @@ export interface Cart {
 
 export interface CheckoutSummary {
   subtotal: number;
+  discount?: number;
+  discountType?: string;
   deliveryFee: number;
   ppn: number;
   finalTotal: number;

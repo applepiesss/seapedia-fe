@@ -9,35 +9,48 @@ import { useRouter } from "next/navigation";
 export default function BuyerCheckoutPage() {
   const [summary, setSummary] = useState<CheckoutSummary | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState("REGULAR");
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState("");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const router = useRouter();
 
-  const fetchSummary = async (method: string) => {
+  const fetchSummary = async (method: string, code?: string) => {
     setLoading(true);
     try {
       const token = getAuth()?.token;
       if (!token) return;
-      const data = await getCheckoutSummary(token, method);
+      const data = await getCheckoutSummary(token, method, code);
       setSummary(data);
+      if (code) setAppliedDiscount(code);
     } catch (e: any) {
-      alert(e.message || "Failed to fetch checkout summary. Cart might be empty.");
-      router.push("/buyer/cart");
+      alert(e.message || "Failed to fetch checkout summary.");
+      if (code) {
+        setDiscountCode("");
+        setAppliedDiscount("");
+        fetchSummary(method, "");
+      } else {
+        router.push("/buyer/cart");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchSummary(deliveryMethod);
+    fetchSummary(deliveryMethod, appliedDiscount);
   }, [deliveryMethod]);
+
+  const handleApplyDiscount = () => {
+    fetchSummary(deliveryMethod, discountCode);
+  };
 
   const handleCheckout = async () => {
     setProcessing(true);
     try {
       const token = getAuth()?.token;
       if (!token) return;
-      await checkout(token, deliveryMethod);
+      await checkout(token, deliveryMethod, appliedDiscount);
       alert("Checkout successful!");
       router.push("/buyer/orders");
     } catch (e: any) {
@@ -78,6 +91,31 @@ export default function BuyerCheckoutPage() {
               ))}
             </div>
           </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Voucher / Promo Code</h2>
+            <div className="flex gap-3">
+              <input 
+                type="text" 
+                value={discountCode}
+                onChange={(e) => setDiscountCode(e.target.value)}
+                placeholder="Enter discount code"
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none uppercase"
+              />
+              <button 
+                onClick={handleApplyDiscount}
+                disabled={loading || !discountCode}
+                className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 font-medium disabled:bg-slate-300"
+              >
+                Apply
+              </button>
+            </div>
+            {appliedDiscount && summary?.discount && summary.discount > 0 && (
+                <p className="text-green-600 text-sm mt-3 font-medium">
+                    ✓ Code {appliedDiscount} applied! You saved Rp {summary.discount.toLocaleString("id-ID")}.
+                </p>
+            )}
+          </div>
         </div>
         
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
@@ -88,6 +126,12 @@ export default function BuyerCheckoutPage() {
                 <span>Subtotal</span>
                 <span>Rp {summary.subtotal.toLocaleString("id-ID")}</span>
               </div>
+              {summary.discount && summary.discount > 0 ? (
+                <div className="flex justify-between text-green-600 font-medium">
+                  <span>Discount ({summary.discountType})</span>
+                  <span>- Rp {summary.discount.toLocaleString("id-ID")}</span>
+                </div>
+              ) : null}
               <div className="flex justify-between text-gray-600">
                 <span>PPN (12%)</span>
                 <span>Rp {summary.ppn.toLocaleString("id-ID")}</span>

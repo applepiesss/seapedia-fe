@@ -151,6 +151,26 @@ type UserProfileResponse = {
                         Add, update, and delete products owned by your store.
                         </p>
                     </Link>
+                    
+                    <Link
+                        href="/seller/orders"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Store Orders</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        Manage and process customer orders.
+                        </p>
+                    </Link>
+                    
+                    <Link
+                        href="/seller/reports"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Income Report</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        View store revenue and order history.
+                        </p>
+                    </Link>
                     </div>
                 )}
 
@@ -163,6 +183,16 @@ type UserProfileResponse = {
                         <h3 className="text-lg font-bold text-slate-950">Buyer Dashboard</h3>
                         <p className="mt-2 text-sm text-slate-600">
                         Manage your wallet, cart, address, and orders.
+                        </p>
+                    </Link>
+                    
+                    <Link
+                        href="/buyer/reports"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Spending Report</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        View your shopping expenses and history.
                         </p>
                     </Link>
                     </div>
