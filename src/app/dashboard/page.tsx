@@ -6,6 +6,7 @@ import { clearAuth, getAuth } from "@/lib/auth";
 import type { Role } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type UserProfileResponse = {
     username: string;
@@ -122,6 +123,55 @@ type UserProfileResponse = {
                 </div>
             </section>
             </div>
+
+            <section className="mt-6 border border-slate-200 bg-white p-6">
+                <h2 className="text-sm font-semibold uppercase text-slate-500">
+                    Role Actions
+                </h2>
+
+                {profile.activeRole === "SELLER" && (
+                    <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    <Link
+                        href="/seller/store"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Store Profile</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        Create or update your unique seller store.
+                        </p>
+                    </Link>
+
+                    <Link
+                        href="/seller/products"
+                        className="border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-700"
+                    >
+                        <h3 className="text-lg font-bold text-slate-950">Product Management</h3>
+                        <p className="mt-2 text-sm text-slate-600">
+                        Add, update, and delete products owned by your store.
+                        </p>
+                    </Link>
+                    </div>
+                )}
+
+                {profile.activeRole === "BUYER" && (
+                    <p className="mt-4 text-sm text-slate-600">
+                    Buyer wallet, cart, checkout, and order history will be introduced in the
+                    next level.
+                    </p>
+                )}
+
+                {profile.activeRole === "DRIVER" && (
+                    <p className="mt-4 text-sm text-slate-600">
+                    Driver delivery jobs and earnings will be introduced in later levels.
+                    </p>
+                )}
+
+                {profile.activeRole === "ADMIN" && (
+                    <p className="mt-4 text-sm text-slate-600">
+                    Admin monitoring tools will be introduced in later levels.
+                    </p>
+                )}
+            </section>
 
             <section className="mt-6 border border-slate-200 bg-white p-6">
             <h2 className="text-sm font-semibold uppercase text-slate-500">
