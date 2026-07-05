@@ -46,12 +46,16 @@ export const removeFromCart = (token: string, productId: number) =>
     headers: h(token),
   });
 
-export const getCheckoutSummary = (token: string, deliveryMethod: string) =>
-  apiRequest<CheckoutSummary>(`/api/buyer/checkout/summary?deliveryMethod=${deliveryMethod}`, { headers: h(token) });
+export const getCheckoutSummary = (token: string, deliveryMethod: string, discountCode?: string) =>
+  apiRequest<CheckoutSummary>(`/api/buyer/checkout/summary?deliveryMethod=${deliveryMethod}${discountCode ? `&discountCode=${discountCode}` : ''}`, { headers: h(token) });
 
-export const checkout = (token: string, deliveryMethod: string) =>
+export const checkout = (token: string, deliveryMethod: string, discountCode?: string) =>
   apiRequest<void>("/api/buyer/checkout", {
     method: "POST",
     headers: h(token),
-    body: JSON.stringify({ deliveryMethod }),
+    body: JSON.stringify({ deliveryMethod, discountCode }),
   });
+
+import { BuyerReport } from "@/types/report";
+export const getBuyerReport = (token: string) =>
+  apiRequest<BuyerReport>("/api/buyer/reports/spending", { headers: h(token) });
